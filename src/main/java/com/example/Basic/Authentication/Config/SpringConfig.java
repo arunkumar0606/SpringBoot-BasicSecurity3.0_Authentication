@@ -1,6 +1,7 @@
 package com.example.Basic.Authentication.Config;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,10 +16,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SpringConfig {
+
+    @Value("${anotherUser.username}")
+    private String userName;
+    @Value("${anotherUser.password}")
+    private String password;
+
 
     //User
     @Bean
@@ -35,7 +45,12 @@ public class SpringConfig {
                 .roles("USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin, user);
+        UserDetails anotherUser=User.withUsername(userName)
+                .password(encoder.encode(password))
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, user,anotherUser);
     }
 
     // Configuring HttpSecurity
